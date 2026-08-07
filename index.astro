@@ -1,0 +1,192 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import RecipeCard from '../components/RecipeCard.astro';
+import { getCollection } from 'astro:content';
+
+const allRecipes = (await getCollection('recipes')).sort(
+  (a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
+);
+const featured = allRecipes.find((r) => r.data.featured) ?? allRecipes[0];
+---
+<BaseLayout title="Courtney Price — Courtney Price">
+  <div class="wrap">
+    <Nav />
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Nutritionist &amp; Recipe Developer</div>
+        <h1>Healthy recipes, made with <em>love</em> for real family tables.</h1>
+        <p>Seasonal by nature, health-conscious by intention — every recipe here is built with longevity in mind, tested in my own kitchen, and reviewed through a nutritionist's eye.</p>
+        <div style="display:flex; gap:16px;">
+          <a href="#recipes" class="btn">Browse recipes</a>
+          <a href="/about" class="btn btn-outline">About Courtney</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><strong>120+</strong><span>Recipes</span></div>
+          <div class="stat"><strong>CNS</strong><span>Board-certified</span></div>
+          <div class="stat"><strong>EN/ES</strong><span>Bilingual guidance</span></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="blob grain">
+          <img src="/images/hero-melon.jpg" alt="" />
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="wrap">
+    <section class="search-row">
+      <div class="search-bar">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search recipes or ingredients..." />
+      </div>
+    </section>
+
+    <section class="categories">
+      <div class="section-head"><h2>Browse by meal</h2></div>
+      <div class="cat-row">
+        <a href="/category/breakfast" class="cat-tile">
+          <div class="blob blob-1 grain"><img src="/images/toast-egg-avocado.jpg" alt="" /></div>
+          <h4>Breakfast</h4>
+        </a>
+        <a href="/category/lunch" class="cat-tile">
+          <div class="blob blob-2 grain"><img src="/images/avocado-egg-bowl.jpg" alt="" /></div>
+          <h4>Lunch</h4>
+        </a>
+        <a href="/category/dinner" class="cat-tile">
+          <div class="blob blob-3 grain"><img src="/images/apricot-tablescape.jpg" alt="" /></div>
+          <h4>Dinner</h4>
+        </a>
+        <a href="/category/desserts" class="cat-tile">
+          <div class="blob blob-4 grain"><img src="/images/cocktails.jpg" alt="" /></div>
+          <h4>Desserts</h4>
+        </a>
+      </div>
+    </section>
+
+    <section class="recipes" id="recipes">
+      <div class="section-head" style="text-align:left; display:flex; align-items:baseline; justify-content:space-between; margin-bottom:44px;">
+        <h2>Latest recipes</h2>
+        <a href="/recipes" style="font-size:12px; color:var(--maroon); letter-spacing:0.04em;">View all →</a>
+      </div>
+      <div class="grid">
+        {allRecipes.map((recipe) => (
+          <RecipeCard
+            slug={recipe.slug}
+            title={recipe.data.title}
+            categories={recipe.data.categories}
+            diets={recipe.data.diets}
+            image={recipe.data.image}
+          />
+        ))}
+      </div>
+    </section>
+
+    {featured && (
+      <section class="story">
+        <div class="story-grid">
+          <div class="story-visual">
+            <div class="frame grain"><img src={featured.data.image} alt="" /></div>
+          </div>
+          <div>
+            <div class="eyebrow">Why this recipe works</div>
+            <h2>{featured.data.title}, through a <em>nutritionist's</em> lens</h2>
+            <p>{featured.data.nutritionNote}</p>
+            <div class="icon-row">
+              <div class="icon-item"><span class="num">{featured.data.nutrition.protein}</span><span class="label">Plant protein</span></div>
+              <div class="icon-item"><span class="num">{featured.data.nutrition.fiber}</span><span class="label">Fiber</span></div>
+              <div class="icon-item"><span class="num">{featured.data.nutrition.glycemicLoad}</span><span class="label">Glycemic load</span></div>
+              <div class="icon-item"><span class="num">{featured.data.diets.join(' · ')}</span><span class="label">Dietary fit</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    )}
+
+    <section class="testimonial">
+      <blockquote>"Courtney's recipes are the first ones I've actually kept making — they taste like real food, not like diet food, and I finally understand why they work for my blood sugar."</blockquote>
+      <cite>— A reader, via newsletter reply</cite>
+    </section>
+  </div>
+
+  <section class="newsletter">
+    <div class="wrap">
+      <h2>Weekly healthy meal ideas, straight to your inbox.</h2>
+      <p>No spam, no fluff — just seasonal recipes and the occasional nutrition tip.</p>
+      <form class="news-form">
+        <input type="email" placeholder="you@email.com" required />
+        <button type="submit" class="btn" style="white-space:nowrap;">Sign up</button>
+      </form>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <Footer />
+  </div>
+</BaseLayout>
+
+<style>
+  .hero{display:grid; grid-template-columns:1fr 0.9fr; gap:90px; align-items:center; padding:64px 0 130px;}
+  .eyebrow{font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--maroon); font-weight:400; margin-bottom:24px; font-family:'Jost';}
+  .hero h1{font-size:52px; line-height:1.16; margin-bottom:28px; font-weight:400;}
+  .hero p{font-size:16px; color:var(--ink-soft); max-width:420px; margin-bottom:40px; font-weight:300;}
+  .hero-stats{display:flex; gap:48px; margin-top:56px;}
+  .hero-stats .stat strong{font-family:'Cormorant Garamond', serif; font-style:italic; font-size:28px; color:var(--maroon); display:block; line-height:1; font-weight:500;}
+  .hero-stats .stat span{font-size:10px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.1em;}
+  .hero-visual{position:relative;}
+  .hero-visual .blob{aspect-ratio:4/5; background:transparent; position:relative; z-index:2;}
+  .hero-visual img{width:100%; height:100%; object-fit:cover;}
+
+  .search-row{display:flex; justify-content:center; padding:0 0 70px;}
+  .search-bar{display:flex; align-items:center; gap:12px; width:100%; max-width:440px; padding:14px 22px; border:1px solid var(--line); border-radius:100px; color:var(--ink-soft);}
+  .search-bar svg{flex-shrink:0; opacity:0.6;}
+  .search-bar input{border:none; outline:none; background:transparent; font-family:'Jost'; font-size:14px; width:100%; color:var(--ink);}
+
+  .categories{padding:0 0 20px; text-align:center;}
+  .section-head{margin-bottom:60px;}
+  .section-head h2{font-size:36px; font-weight:400;}
+  .cat-row{display:flex; justify-content:center; gap:34px; flex-wrap:wrap;}
+  .cat-tile{width:170px; text-align:center; display:block;}
+  .cat-tile .blob{width:170px; height:186px; margin:0 auto 22px; background:transparent; transition:transform .3s ease, box-shadow .3s ease;}
+  .cat-tile:hover .blob{transform:translateY(-6px); box-shadow:0 22px 40px -20px rgba(59,46,39,0.35);}
+  .cat-tile img{width:100%; height:100%; object-fit:cover;}
+  .cat-tile h4{font-size:15px; font-style:italic; font-weight:400; color:var(--ink-soft);}
+
+  .recipes{padding:130px 0 100px;}
+  .grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:34px;}
+
+  .story{padding:20px 0 130px;}
+  .story-grid{display:grid; grid-template-columns:0.85fr 1.15fr; gap:80px; align-items:center;}
+  .story .eyebrow{color:var(--maroon);}
+  .story h2{color:var(--ink); font-size:34px; margin-bottom:22px; font-weight:400;}
+  .story p{color:var(--ink-soft); max-width:440px; margin-bottom:40px; font-weight:300;}
+  .icon-row{display:flex; gap:40px; flex-wrap:wrap;}
+  .icon-item{display:flex; flex-direction:column; gap:6px; min-width:80px; border-left:1px solid var(--maroon); padding-left:16px;}
+  .icon-item .num{font-family:'Cormorant Garamond', serif; font-style:italic; font-size:24px; color:var(--maroon); font-weight:500;}
+  .icon-item .label{font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em;}
+  .story-visual .frame{aspect-ratio:1/1; width:100%; border-radius:20px; overflow:hidden; background:transparent;}
+  .story-visual img{width:100%; height:100%; object-fit:cover;}
+
+  .testimonial{padding:20px 0 140px; text-align:center; border-top:1px solid var(--line);}
+  .testimonial blockquote{font-family:'Cormorant Garamond', serif; font-style:italic; font-size:28px; line-height:1.5; max-width:660px; margin:60px auto 26px; font-weight:400; color:var(--ink);}
+  .testimonial cite{font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-soft); font-style:normal;}
+
+  .newsletter{padding:90px 0; text-align:center; background:var(--tan-stripe); margin-top:20px;}
+  .newsletter h2{font-size:34px; max-width:480px; margin:0 auto 16px; font-weight:400; color:var(--ink);}
+  .newsletter p{color:var(--ink); opacity:0.7; max-width:420px; margin:0 auto 36px; font-weight:300;}
+  .news-form{display:flex; justify-content:center; gap:10px; max-width:400px; margin:0 auto;}
+  .news-form input{flex:1; padding:14px 20px; border:1px solid rgba(59,46,39,0.25); border-radius:100px; font-family:'Jost'; font-size:13px; background:#fff;}
+  .news-form input:focus{outline:1px solid var(--maroon); outline-offset:1px;}
+
+  @media (max-width: 860px){
+    .hero, .story-grid{grid-template-columns:1fr;}
+    .hero h1{font-size:36px;}
+    .grid{grid-template-columns:repeat(2,1fr);}
+    .cat-row{gap:18px;}
+    .cat-tile{width:130px;}
+    .cat-tile .blob{width:130px; height:144px;}
+  }
+</style>

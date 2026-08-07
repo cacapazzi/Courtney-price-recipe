@@ -1,0 +1,37 @@
+---
+interface Props {
+  slug: string;
+  title: string;
+  categories: string[];
+  diets: string[];
+  image: string;
+}
+const { slug, title, categories, diets, image } = Astro.props;
+---
+<a href={`/recipes/${slug}`} class="card">
+  <div class="card-img">
+    <div class="photo-clip grain"><img src={image} alt={title} /></div>
+    {diets.length > 0 && (
+      <div class="stamps">
+        {diets.map((d) => <div class="stamp">{d}</div>)}
+      </div>
+    )}
+  </div>
+  <div class="card-body">
+    <div class="card-cat">{categories.join(' · ')}</div>
+    <h4>{title}</h4>
+  </div>
+</a>
+
+<style>
+  .card{background:transparent; display:block;}
+  .card-img{aspect-ratio:1/1; position:relative;}
+  .card-img .photo-clip{position:absolute; inset:0; overflow:hidden; border-radius:16px; background:transparent;}
+  .card-img img{width:100%; height:100%; object-fit:cover; transition:transform .5s;}
+  .card:hover .card-img img{transform:scale(1.04);}
+  .stamps{position:absolute; top:20px; left:20px; display:flex; gap:6px; z-index:2;}
+  .stamp{width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.85); border:1px solid var(--maroon); display:flex; align-items:center; justify-content:center; font-size:8px; font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:600; letter-spacing:0.02em; color:var(--maroon); box-shadow:0 2px 6px rgba(59,46,39,0.12);}
+  .card-body{padding:18px 4px 0;}
+  .card-cat{font-size:13px; font-style:italic; letter-spacing:0.02em; color:var(--ink-soft); font-weight:400; margin-bottom:6px; font-family:'Cormorant Garamond', serif;}
+  .card-body h4{font-size:17px; line-height:1.3; font-weight:500;}
+</style>
